@@ -8,6 +8,11 @@ connection.on("updateTotalViews", (totalViews) =>
     newSpan.innerText = totalViews.toString();
 });
 
+connection.on("updateTotalUsers", (totalUsers) => {
+    var newCountSpan = document.getElementById("totalUsersCounter");
+    newCountSpan.innerText = totalUsers.toString();
+});
+
 // invoke hub methods aka send notifications to hub
 function newWindowLoadedOnClient() {
     connection.send("NewWindowLoaded");
