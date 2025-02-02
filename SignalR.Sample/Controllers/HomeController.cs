@@ -37,7 +37,17 @@ namespace SignalR.Sample.Controllers
             return Accepted();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Notification()
+        {
+            return View();
+        }
+
+        public IActionResult DeathlyHallowRace()
+        {
+            return View();
+        }
+
+        public IActionResult HarryPotterHouse()
         {
             return View();
         }
