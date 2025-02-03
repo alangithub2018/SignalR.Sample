@@ -15,7 +15,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+// azure connection string for signalR
+//var azureSignalRConnectionString = "";
+
 // Add SignalR services
+// How to connect and use azure signalR
+//builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
 builder.Services.AddSignalR();
 
 var app = builder.Build();

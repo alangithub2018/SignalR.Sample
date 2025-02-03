@@ -1,6 +1,7 @@
 ﻿// create connection to hub
 const connection = new signalR.HubConnectionBuilder()
     //.configureLogging(signalR.LogLevel.Information)
+    .withAutomaticReconnect()
     .withUrl("/hubs/userCount", signalR.HttpTransportType.WebSockets).build();
 
 // connect to methods that hub invokes aka receive notifications from hub
@@ -34,6 +35,18 @@ function rejected() {
     // do something on error
     console.log("Connection to User Hub Failed");
 }
+
+connection.onclose((error) => {
+    document.body.style.background = "red";
+});
+
+connection.onreconnected((connectionId) => {
+    document.body.style.background = "green";
+});
+
+connection.onreconnecting((error) => {
+    document.body.style.background = "orange";
+});
 
 // start connection
 connection.start().then(fulfilled, rejected);
