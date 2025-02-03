@@ -1,0 +1,21 @@
+﻿
+var advancedChatConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/hubs/chat")
+    .withAutomaticReconnect([0, 1000, 5000, null])
+    .build();
+
+advancedChatConnection.on("ReceiveUserConnected", function (userId, userName) {
+    addMessage(`${userName} is online`);
+});
+
+function addMessage(msg) {
+    if (msg == null && msg == '') {
+        return;
+    }
+    let ui = document.getElementById("messagesList");
+    let li = document.createElement("li");
+    li.innerHTML = msg;
+    ui.appendChild(li);
+}
+
+advancedChatConnection.start();
