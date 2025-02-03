@@ -11,10 +11,15 @@ chatConnection.on("MessageReceived", function (user, message) {
 document.getElementById("sendMessage").addEventListener("click", function (event) {
     var sender = document.getElementById("senderEmail").value;
     var message = document.getElementById("chatMessage").value;
+    var receiver = document.getElementById("receiverEmail").value;
 
-    chatConnection.send("SendMessageToAll", sender, message).catch(function (error) {
-        return console.error(error.toString());
-    });
+    if (receiver.length > 0) {
+        chatConnection.send("SendMessageToReceiver", sender, receiver, message);
+    } else {
+        chatConnection.send("SendMessageToAll", sender, message).catch(function (error) {
+            return console.error(error.toString());
+        });
+    }
 
     event.preventDefault();
 });
