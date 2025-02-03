@@ -26,6 +26,10 @@ advancedChatConnection.on("ReceivePublicMessage", function (roomId, userId, user
     addMessage(`[Public message - ${roomName}] ${userName} says ${message}`);
 });
 
+advancedChatConnection.on("ReceivePrivateMessage", function (senderId, senderName, receiverId, message, chatId, receiverName) {
+    addMessage(`[Private message to ${receiverName}] ${senderName} says ${message}`);
+});
+
 function sendPublicMessage() {
     let inputMsg = document.getElementById("txtPublicMessage");
     let ddlSelRoom = document.getElementById("ddlSelRoom");
@@ -35,6 +39,19 @@ function sendPublicMessage() {
 
     var message = inputMsg.value;
     advancedChatConnection.send("SendPublicMessage", Number(roomId), message, roomName);
+    inputMsg.value = '';
+}
+
+function sendPrivateMessage() {
+    let inputMsg = document.getElementById("txtPrivateMessage");
+    let ddlSelUser = document.getElementById("ddlSelUser");
+
+    let receiverId = ddlSelUser.value;
+    let receiverName = ddlSelUser.options[ddlSelUser.selectedIndex].text;
+
+    var message = inputMsg.value;
+    advancedChatConnection.send("SendPrivateMessage", receiverId, message, receiverName);
+    inputMsg.value = '';
 }
 
 function deleteRoom() {

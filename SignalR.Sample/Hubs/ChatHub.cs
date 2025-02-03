@@ -37,7 +37,7 @@ namespace SignalR.Sample.Hubs
                 // Remove diconnected connection from our list
                 userConnections.Remove(Context.ConnectionId);
 
-                // Remove userId and connections
+                // Remove senderId and connections
                 HubConnections.Users.Remove(userId!);
                 if (userConnections.Any())
                 {
@@ -76,6 +76,16 @@ namespace SignalR.Sample.Hubs
             var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
 
             await Clients.All.SendAsync("ReceivePublicMessage", roomId, userId, userName, message, roomName);
+        }
+
+        public async Task SendPrivateMessage(string receiverId, string message, string receiverName)
+        {
+            var senderId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
+            var senderName = _context.Users.FirstOrDefault(u => u.Id == senderId)!.UserName;
+
+            var users = new string[] { senderId, receiverId };
+
+            await Clients.Users(users).SendAsync("ReceivePrivateMessage", senderId, senderName, receiverId, message, Guid.NewGuid(), receiverName);
         }
     }
 }
