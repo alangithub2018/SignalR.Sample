@@ -4,10 +4,12 @@ var advancedChatConnection = new signalR.HubConnectionBuilder()
     .withAutomaticReconnect([0, 1000, 5000, null])
     .build();
 
-advancedChatConnection.on("ReceiveUserConnected", function (userId, userName, isOldConnection) {
-    if (!isOldConnection) {
-        addMessage(`${userName} is online`);
-    }
+advancedChatConnection.on("ReceiveUserConnected", function (userId, userName) {
+    addMessage(`${userName} has a connection open`);    
+});
+
+advancedChatConnection.on("ReceiveUserDisconnected", function (userId, userName, userHasConnection) {
+    addMessage(`${userName} has closed a connection`);
 });
 
 function addMessage(msg) {

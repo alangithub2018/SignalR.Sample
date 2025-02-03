@@ -20,10 +20,37 @@ namespace SignalR.Sample.Hubs
             if (!string.IsNullOrEmpty(userId))
             {
                 var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
-                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserConnected", userId, userName, HubConnections.HasUser(userId));
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserConnected", userId, userName);
                 HubConnections.AddUserConnection(userId, Context.ConnectionId);
             }
             return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (HubConnections.HasUserConnection(userId, Context.ConnectionId))
+            {
+                var userConnections = HubConnections.Users[userId];
+                // Remove diconnected connection from our list
+                userConnections.Remove(Context.ConnectionId);
+
+                // Remove userId and connections
+                HubConnections.Users.Remove(userId);
+                if (userConnections.Any())
+                {
+                    HubConnections.Users.Add(userId, userConnections);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserDisconnected", userId, userName);
+                HubConnections.AddUserConnection(userId, Context.ConnectionId);
+            }
+            return base.OnDisconnectedAsync(exception);
         }
 
         //public async Task SendMessageToAll(string user, string message)
