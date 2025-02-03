@@ -20,7 +20,7 @@ namespace SignalR.Sample.Hubs
             if (!string.IsNullOrEmpty(userId))
             {
                 var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
-                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserConnected", userId, userName);
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserConnected", userId, userName, HubConnections.HasUser(userId));
                 HubConnections.AddUserConnection(userId, Context.ConnectionId);
             }
             return base.OnConnectedAsync();

@@ -22,6 +22,23 @@
             return false;
         }
 
+        public static bool HasUser(string userId)
+        {
+            try
+            {
+                if (Users.ContainsKey(userId))
+                {
+                    return Users[userId].Any();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
+        }
+
         public static void AddUserConnection(string UserId, string ConnectionId)
         {
 
