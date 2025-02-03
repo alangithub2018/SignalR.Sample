@@ -22,6 +22,21 @@ advancedChatConnection.on("ReceiveDeleteRoomMessage", function (deleted, selecte
     fillRoomDropDown();
 });
 
+advancedChatConnection.on("ReceivePublicMessage", function (roomId, userId, userName, message, roomName) {
+    addMessage(`[Public message - ${roomName}] ${userName} says ${message}`);
+});
+
+function sendPublicMessage() {
+    let inputMsg = document.getElementById("txtPublicMessage");
+    let ddlSelRoom = document.getElementById("ddlSelRoom");
+
+    let roomId = ddlSelRoom.value;
+    let roomName = ddlSelRoom.options[ddlSelRoom.selectedIndex].text;
+
+    var message = inputMsg.value;
+    advancedChatConnection.send("SendPublicMessage", Number(roomId), message, roomName);
+}
+
 function deleteRoom() {
     let ddlDelRoom = document.getElementById("ddlDelRoom");
     // Get the roomName
@@ -51,7 +66,7 @@ function deleteRoom() {
         success: function (json) {
 
             /*REMOVE ROOM COMPLETED SUCCESSFULLY*/
-            advancedChatConnection.invoke("SendDeleteRoomMessage", json.deleted, json.selected, roomName);
+            advancedChatConnection.send("SendDeleteRoomMessage", json.deleted, json.selected, roomName);
             fillRoomDropDown();
         },
         error: function (xhr) {
@@ -83,7 +98,7 @@ function addnewRoom(maxRoom) {
         success: function (json) {
 
             /*ADD ROOM COMPLETED SUCCESSFULLY*/
-            advancedChatConnection.invoke("SendAddRoomMessage", maxRoom, json.id, json.name);
+            advancedChatConnection.send("SendAddRoomMessage", maxRoom, json.id, json.name);
             createRoomName.value = '';
 
 

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using SignalR.Sample.Data;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SignalR.Sample.Hubs
 {
@@ -66,6 +68,14 @@ namespace SignalR.Sample.Hubs
             var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
 
             await Clients.All.SendAsync("ReceiveDeleteRoomMessage", deleted, selected, roomName, userName);
+        }
+
+        public async Task SendPublicMessage(int roomId, string message, string roomName)
+        {
+            var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
+
+            await Clients.All.SendAsync("ReceivePublicMessage", roomId, userId, userName, message, roomName);
         }
     }
 }
