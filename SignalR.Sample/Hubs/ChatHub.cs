@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using SignalR.Sample.Data;
 using System.Security.Claims;
 
@@ -30,17 +29,17 @@ namespace SignalR.Sample.Hubs
         {
             var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
             
-            if (HubConnections.HasUserConnection(userId, Context.ConnectionId))
+            if (HubConnections.HasUserConnection(userId!, Context.ConnectionId))
             {
-                var userConnections = HubConnections.Users[userId];
+                var userConnections = HubConnections.Users[userId!];
                 // Remove diconnected connection from our list
                 userConnections.Remove(Context.ConnectionId);
 
                 // Remove userId and connections
-                HubConnections.Users.Remove(userId);
+                HubConnections.Users.Remove(userId!);
                 if (userConnections.Any())
                 {
-                    HubConnections.Users.Add(userId, userConnections);
+                    HubConnections.Users.Add(userId!, userConnections);
                 }
             }
 
@@ -55,26 +54,18 @@ namespace SignalR.Sample.Hubs
 
         public async Task SendAddRoomMessage(int maxRoom, int roomId, string roomName)
         {
-            var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
 
             await Clients.All.SendAsync("ReceiveAddRoomMessage", maxRoom, roomId, roomName, userId, userName);
         }
 
-        //public async Task SendMessageToAll(string user, string message)
-        //{
-        //    await Clients.All.SendAsync("MessageReceived", user, message);
-        //}
+        public async Task SendDeleteRoomMessage(int deleted, int selected, string roomName)
+        {
+            var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = _context.Users.FirstOrDefault(u => u.Id == userId)!.UserName;
 
-        //[Authorize]
-        //public async Task SendMessageToReceiver(string sender, string receiver, string message)
-        //{
-        //    var userId = _context.Users.FirstOrDefault(u => u.Email.ToLower() == receiver.ToLower())!.Id;
-
-        //    if (!string.IsNullOrEmpty(userId))
-        //    {
-        //        await Clients.User(userId).SendAsync("MessageReceived", sender, message);
-        //    }
-        //}
+            await Clients.All.SendAsync("ReceiveDeleteRoomMessage", deleted, selected, roomName, userName);
+        }
     }
 }

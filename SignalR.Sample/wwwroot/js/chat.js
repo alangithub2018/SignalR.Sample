@@ -17,6 +17,49 @@ advancedChatConnection.on("ReceiveAddRoomMessage", function (maxRoom, roomId, ro
     fillRoomDropDown();
 });
 
+advancedChatConnection.on("ReceiveDeleteRoomMessage", function (deleted, selected, roomName, userName) {
+    addMessage(`${userName} has deleted room ${roomName}`);
+    fillRoomDropDown();
+});
+
+function deleteRoom() {
+    let ddlDelRoom = document.getElementById("ddlDelRoom");
+    // Get the roomName
+    var roomName = ddlDelRoom.options[ddlDelRoom.selectedIndex].text;
+
+    // display a confirmation
+    let text = `Are you sure to delete room ${roomName}?`;
+    if (confirm(text) == false) {
+        return;
+    }
+
+    if (roomName == null && roomName == '') {
+        return;
+    }
+
+    let roomId = ddlDelRoom.value;
+
+    /*POST*/
+    $.ajax({
+        url: `/ChatRooms/DeleteChatRoom/${roomId}`,
+        dataType: "json",
+        type: "DELETE",
+        contentType: 'application/json;',
+        async: true,
+        processData: false,
+        cache: false,
+        success: function (json) {
+
+            /*REMOVE ROOM COMPLETED SUCCESSFULLY*/
+            advancedChatConnection.invoke("SendDeleteRoomMessage", json.deleted, json.selected, roomName);
+            fillRoomDropDown();
+        },
+        error: function (xhr) {
+            alert('error');
+        }
+    })
+}
+
 function addnewRoom(maxRoom) {
 
     let createRoomName = document.getElementById('createRoomName');
