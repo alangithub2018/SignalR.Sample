@@ -83,9 +83,22 @@ namespace SignalR.Sample.Hubs
             var senderId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
             var senderName = _context.Users.FirstOrDefault(u => u.Id == senderId)!.UserName;
 
-            var users = new string[] { senderId, receiverId };
+            var users = new string[] { senderId!, receiverId };
 
             await Clients.Users(users).SendAsync("ReceivePrivateMessage", senderId, senderName, receiverId, message, Guid.NewGuid(), receiverName);
+        }
+
+        public async Task SendOpenPrivateChat(string receiverId)
+        {
+            var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = Context.User!.FindFirstValue(ClaimTypes.Name);
+
+            await Clients.User(receiverId).SendAsync("ReceiveOpenPrivateChat", userId, userName);
+        }
+
+        public async Task SendDeletePrivateChat(string chatId)
+        {
+            await Clients.All.SendAsync("ReceiveDeletePrivate", chatId);
         }
     }
 }
